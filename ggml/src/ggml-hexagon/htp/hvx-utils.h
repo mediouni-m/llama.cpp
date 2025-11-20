@@ -12,6 +12,19 @@
 #define VLEN_FP32   (VLEN / SIZEOF_FP32)
 #define VLEN_FP16   (VLEN / SIZEOF_FP16)
 
+/* Q6_Vsf_equals_Vw is only available on v73+.*/
+#if __HVX_ARCH__ < 73
+static inline HVX_Vector Q6_Vsf_equals_Vw(HVX_Vector vec) {
+    __attribute__((aligned(128))) int32_t src[32];
+    __attribute__((aligned(128))) float dest[32];
+    *((HVX_Vector *)&src) = vec;
+    for (int i = 0; i < 32; i++) {
+        dest[i] = vec[i];
+    }
+    return *(HVX_Vector *)&dest;
+}
+#endif
+
 static inline HVX_Vector hvx_vec_splat_fp32(float i) {
     union {
         float   f;
